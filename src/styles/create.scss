@@ -1,0 +1,24 @@
+@import "work-includes";
+
+create-status-report {
+  display: block;
+  position: relative;
+
+  ul {
+    li {
+      margin-top: $margin-smallest;
+
+      &:nth-child(odd) {
+        margin-top: $margin-small;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+  }
+
+  button {
+    margin-top: $margin;
+  }
+}

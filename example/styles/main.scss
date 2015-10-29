@@ -18,8 +18,5 @@
 
 body {
   background-color: $neutral-color-lightest;
-
-  > main {
-    padding: $padding;
-  }
+  padding: $padding;
 }
