@@ -1,4 +1,4 @@
-loader
+loader(ng-show="false")
 
 form
   ul
@@ -13,13 +13,23 @@ form
       label status message
 
     li
-      textarea.wider(placeholder="Status message")
+      textarea.widest(placeholder="Status message")
 
     li
       label project links
 
-    li
-      input.wider(type="text" placeholder="http://www.example.com")
+    li.project-links
+      .flex.middle
+        input.wider(type="text" placeholder="http://www.example.com")
+
+        button.clean.plus
+          .icon.plus.hollow
+
+      ul
+        li.flex.middle.space-between
+          p.link http://www.example.com
+
+          button.clean remove
 
     li
       label project images

@@ -6,10 +6,10 @@ create-status-report {
 
   ul {
     li {
-      margin-top: $margin-smallest;
+      margin-top: $margin-small;
 
       &:nth-child(odd) {
-        margin-top: $margin-small;
+        margin-top: $margin;
       }
 
       &:first-child {
@@ -20,5 +20,25 @@ create-status-report {
 
   button {
     margin-top: $margin;
+
+    &.plus {
+      margin-left: $margin-smallest;
+    }
+  }
+
+  .project-links {
+    display: inline-block;
+
+    ul {
+      margin: $margin-small 0 0 $margin-small;
+    }
+
+    li {
+      margin-top: $margin-smallest;
+    }
+
+    button {
+      text-transform: lowercase;
+    }
   }
 }
