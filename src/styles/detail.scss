@@ -3,7 +3,6 @@
 detail-status-report {
   display   : block;
   position  : relative;
-  text-align: center;
 
   .message, .links, .files {
     margin-top: $margin;
@@ -16,11 +15,8 @@ detail-status-report {
   }
 
   .files {
-    margin-left: auto;
-    margin-right: auto;
-
     li {
-      margin: $margin-smallest;
+      margin: 0 $margin-small $margin-small 0;
     }
 
     a {
