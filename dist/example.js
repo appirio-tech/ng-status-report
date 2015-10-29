@@ -25,7 +25,8 @@ angular.module("app.constants", [])
 
 }).call(this);
 
-angular.module("example").run(["$templateCache", function($templateCache) {$templateCache.put("views/create.example.html","<create-status-report></create-status-report>");}]);
+angular.module("example").run(["$templateCache", function($templateCache) {$templateCache.put("views/create.example.html","<create-status-report></create-status-report>");
+$templateCache.put("views/detail.example.html","<detail-status-report></detail-status-report>");}]);
 (function() {
   'use strict';
   var config;
@@ -37,6 +38,11 @@ angular.module("example").run(["$templateCache", function($templateCache) {$temp
       url: '/',
       title: 'create',
       templateUrl: 'views/create.example.html'
+    };
+    states['detail'] = {
+      url: '/detail',
+      title: 'detail',
+      templateUrl: 'views/detail.example.html'
     };
     results = [];
     for (key in states) {
