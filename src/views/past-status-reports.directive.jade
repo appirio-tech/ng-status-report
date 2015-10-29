@@ -1,18 +1,18 @@
 loader(ng-show="false")
 
 ul.links
-  li.flex.middle
+  li.flex.middle(ng-repeat="report in vm.pastReports track by $index")
     .bullet
 
-    a(href="http://www.example.com") April 7 2015
+    button.clean(ng-click="vm.activateReport(report.id)") {{report.createdAt}}
 
-  li.flex.middle
-    .bullet
+  //- li.flex.middle
+  //-   .bullet
 
-    a(href="http://www.example.com") April 7 2015
+  //-   a(href="http://www.example.com") April 7 2015
 
-  li.flex.middle
-    .bullet
+  //- li.flex.middle
+  //-   .bullet
 
-    a(href="http://www.example.com") April 7 2015
+  //-   a(href="http://www.example.com") April 7 2015
 
