@@ -8,6 +8,11 @@ config = ($stateProvider) ->
     title       : 'create'
     templateUrl : 'views/create.example.html'
 
+  states['detail'] =
+    url         : '/detail'
+    title       : 'detail'
+    templateUrl : 'views/detail.example.html'
+
   for key, state of states
     $stateProvider.state key, state
 
