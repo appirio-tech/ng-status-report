@@ -4,15 +4,6 @@ ul.links
   li.flex.middle(ng-repeat="report in vm.pastReports track by $index")
     .bullet
 
-    button.clean(ng-click="vm.activateReport(report.id)") {{report.createdAt}}
-
-  //- li.flex.middle
-  //-   .bullet
-
-  //-   a(href="http://www.example.com") April 7 2015
-
-  //- li.flex.middle
-  //-   .bullet
-
-  //-   a(href="http://www.example.com") April 7 2015
+    button.clean
+      a(ui-sref="status-report-detail({id: report.id})") {{report.createdAt | date:'MMMM d yyyy' }}
 

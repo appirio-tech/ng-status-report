@@ -13,8 +13,8 @@ config = ($stateProvider) ->
     title       : 'create'
     templateUrl : 'views/create.example.html'
 
-  states['detail'] =
-    url         : '/detail'
+  states['status-report-detail'] =
+    url         : '/detail/:id'
     title       : 'detail'
     templateUrl : 'views/detail.example.html'
 

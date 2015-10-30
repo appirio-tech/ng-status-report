@@ -1,6 +1,6 @@
 'use strict'
 
-PastReportsController = ($scope, API_URL, StatusReportsAPIService) ->
+PastReportsController = ($scope, API_URL, StatusReportAPIService) ->
   vm        = this
   vm.workId = $scope.workId
   vm.showCreateReport = true
@@ -8,9 +8,9 @@ PastReportsController = ($scope, API_URL, StatusReportsAPIService) ->
 
   activate = ->
     params =
-      workId: vm.workId
+      projectId: vm.workId
 
-    resource = StatusReportsAPIService.query params
+    resource = StatusReportAPIService.query params
 
     resource.$promise.then (response) ->
       vm.pastReports = response
@@ -21,6 +21,6 @@ PastReportsController = ($scope, API_URL, StatusReportsAPIService) ->
 
   activate()
 
-PastReportsController.$inject = ['$scope', 'API_URL', 'StatusReportsAPIService']
+PastReportsController.$inject = ['$scope', 'API_URL', 'StatusReportAPIService']
 
 angular.module('appirio-tech-ng-status-report').controller 'PastReportsController', PastReportsController

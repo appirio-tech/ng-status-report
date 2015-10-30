@@ -6,6 +6,7 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
   vm.uploaderUploading = null
   vm.uploaderHasErrors = null
   vm.uploaderHasFiles  = null
+  vm.currentLink = ''
   vm.statusReport      =
     text: null
     links: []
@@ -13,6 +14,26 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
 
   isValid = (report) ->
     report.text != null && !vm.uploaderHasErrors && !vm.uploaderUploading
+
+  isUnique = (link) ->
+    unique = true
+    vm.statusReport.links.forEach (vmLink) ->
+      if vmLink.url == link
+        unique = false
+
+    unique
+
+  vm.addLink = ->
+    if vm.currentLink?.length && isUnique vm.currentLink
+      vm.statusReport.links.push
+        url: vm.currentLink
+
+      vm.currentLink = ''
+
+  vm.removeLink = (link) ->
+    vm.statusReport.links.forEach (vmLink, index) ->
+      if vmLink.url == link.url
+        vm.statusReport.links.splice(index, 1)
 
   vm.create = ->
     if isValid vm.statusReport
@@ -58,7 +79,7 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
     uploaderConfig
 
   activate = ->
-    configureUploader(vm.workId, 'report')
+    vm.uploaderConfig = configureUploader(vm.workId, 'report')
 
     vm
 
