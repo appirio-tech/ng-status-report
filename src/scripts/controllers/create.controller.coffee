@@ -52,7 +52,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
     category = 'work'
 
     uploaderConfig =
-      name: "#{assetType}-uploader-#{workId}"
+      name: "#{assetType}-uploader-#{workId}-#{Date.now}"
       allowMultiple: true
       query:
         url: domain + '/v3/attachments'
