@@ -156,7 +156,7 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
       domain = API_URL;
       category = 'work';
       uploaderConfig = {
-        name: assetType + "-uploader-" + workId,
+        name: assetType + "-uploader-" + workId + "-" + Date.now,
         allowMultiple: true,
         query: {
           url: domain + '/v3/attachments',
