@@ -5,5 +5,5 @@ ul.links
     .bullet
 
     button.clean
-      a(ui-sref="status-report-detail({id: report.id})") {{report.createdAt | date:'MMMM d yyyy' }}
+      a(ui-sref="copilot-status-report-details({workId: vm.workId, reportId: report.id})") {{report.createdAt | date:'MMMM d yyyy' }}
 

@@ -37,12 +37,7 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
 
   vm.create = ->
     if isValid vm.statusReport
-      updates =
-        text: null
-        links: []
-        images: []
-
-      resource = StatusReportAPIService.post params, report
+      resource = StatusReportAPIService.post params, vm.statusReport
 
       resource.$promise.then ->
       resource.$promise.finally ->
@@ -88,3 +83,7 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
 CreateController.$inject = ['$scope', 'API_URL', 'StatusReportAPIService']
 
 angular.module('appirio-tech-ng-status-report').controller 'CreateController', CreateController
+
+captions: [
+
+]
