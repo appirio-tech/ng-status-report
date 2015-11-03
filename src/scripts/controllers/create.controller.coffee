@@ -1,6 +1,6 @@
 'use strict'
 
-CreateController = ($scope, API_URL, StatusReportAPIService) ->
+CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
   vm                   = this
   vm.workId            = $scope.workId
   vm.uploaderUploading = null
@@ -85,7 +85,7 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
 
   activate()
 
-CreateController.$inject = ['$scope', 'API_URL', 'StatusReportAPIService']
+CreateController.$inject = ['$scope', '$state', 'API_URL', 'StatusReportAPIService']
 
 angular.module('appirio-tech-ng-status-report').controller 'CreateController', CreateController
 

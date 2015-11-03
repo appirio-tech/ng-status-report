@@ -93,7 +93,7 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
   'use strict';
   var CreateController;
 
-  CreateController = function($scope, API_URL, StatusReportAPIService) {
+  CreateController = function($scope, $state, API_URL, StatusReportAPIService) {
     var activate, configureUploader, isUnique, isValid, vm;
     vm = this;
     vm.workId = $scope.workId;
@@ -197,7 +197,7 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
     return activate();
   };
 
-  CreateController.$inject = ['$scope', 'API_URL', 'StatusReportAPIService'];
+  CreateController.$inject = ['$scope', '$state', 'API_URL', 'StatusReportAPIService'];
 
   angular.module('appirio-tech-ng-status-report').controller('CreateController', CreateController);
 
