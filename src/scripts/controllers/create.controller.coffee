@@ -8,6 +8,8 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
   vm.uploaderHasFiles  = null
   vm.uploaderFiles = null
   vm.currentLink = ''
+  vm.currentCaption = ''
+  vm.captions = []
   vm.statusReport      =
     text: null
     links: []
@@ -31,10 +33,20 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
 
       vm.currentLink = ''
 
+  vm.addCaption = ->
+    if vm.currentCaption.length
+      vm.captions.push vm.currentCaption
+      vm.currentCaption = ''
+
   vm.removeLink = (link) ->
     vm.statusReport.links.forEach (vmLink, index) ->
       if vmLink.url == link.url
         vm.statusReport.links.splice(index, 1)
+
+  vm.removeCaption = (caption) ->
+    vm.captions.forEach (vmCaption, index) ->
+      if vmCaption == caption
+        vm.captions.splice(index, 1)
 
   vm.create = ->
     if isValid vm.statusReport
@@ -84,7 +96,8 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
 
     $scope.$watch 'vm.uploaderFiles', (newFiles) ->
       if newFiles?.length
-        vm.statusReport.images = newFiles.map (file) ->
+        vm.statusReport.images = newFiles.map (file, index) ->
+          caption: vm.captions[index]
           path: file.createRecord.params.filePath
           fileId: file.fileId
       else
