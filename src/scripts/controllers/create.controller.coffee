@@ -39,7 +39,9 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
     if isValid vm.statusReport
       resource = StatusReportAPIService.post params, vm.statusReport
 
-      resource.$promise.then ->
+      resource.$promise.then (response) ->
+        $state.go 'copilot-status-report-details', {id: vm.workId, reportId: response.id}
+
       resource.$promise.finally ->
 
   configureUploader = (workId, assetType) ->
