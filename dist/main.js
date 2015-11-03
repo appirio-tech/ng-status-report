@@ -136,8 +136,11 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
       });
     };
     vm.create = function() {
-      var resource;
+      var params, resource;
       if (isValid(vm.statusReport)) {
+        params = {
+          projectId: vm.workId
+        };
         resource = StatusReportAPIService.post(params, vm.statusReport);
         resource.$promise.then(function(response) {
           return $state.go('copilot-status-report-details', {

@@ -37,6 +37,9 @@ CreateController = ($scope, API_URL, StatusReportAPIService) ->
 
   vm.create = ->
     if isValid vm.statusReport
+      params =
+        projectId: vm.workId
+
       resource = StatusReportAPIService.post params, vm.statusReport
 
       resource.$promise.then (response) ->
