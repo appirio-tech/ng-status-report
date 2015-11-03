@@ -6,6 +6,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
   vm.uploaderUploading = null
   vm.uploaderHasErrors = null
   vm.uploaderHasFiles  = null
+  vm.uploaderFiles = null
   vm.currentLink = ''
   vm.statusReport      =
     text: null
@@ -52,7 +53,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
     category = 'work'
 
     uploaderConfig =
-      name: "#{assetType}-uploader-#{workId}-#{Date.now}"
+      name: "#{assetType}-uploader-#{workId}-#{Date.now()}"
       allowMultiple: true
       query:
         url: domain + '/v3/attachments'
@@ -79,7 +80,15 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
     uploaderConfig
 
   activate = ->
-    vm.uploaderConfig = configureUploader(vm.workId, 'report')
+    vm.uploaderConfig = configureUploader(vm.workId, 'status-report-image')
+
+    $scope.$watch 'vm.uploaderFiles', (newFiles) ->
+      if newFiles?.length
+        vm.statusReport.images = newFiles.map (file) ->
+          path: file.createRecord.params.filePath
+          fileId: file.fileId
+      else
+        vm.statusReport.images = []
 
     vm
 

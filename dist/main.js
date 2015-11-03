@@ -8,7 +8,7 @@
 
 }).call(this);
 
-angular.module("appirio-tech-ng-status-report").run(["$templateCache", function($templateCache) {$templateCache.put("views/create-status-report.directive.html","<loader ng-show=\"false\"></loader><form><ul><li><label>project status</label></li><li><label>status message</label></li><li><textarea placeholder=\"Status message\" ng-model=\"vm.statusReport.text\" class=\"widest\"></textarea></li><li><label>project links</label></li><li class=\"project-links\"><div class=\"flex middle\"><input type=\"url\" placeholder=\"http://www.example.com\" ng-model=\"vm.currentLink\" class=\"wider\"/><button ng-click=\"vm.addLink()\" class=\"clean plus\"><div class=\"icon plus hollow\"></div></button></div><ul><li ng-repeat=\"link in vm.statusReport.links track by $index\" class=\"flex middle space-between\"><p class=\"link\">{{link.url}}</p><button ng-click=\"vm.removeLink(link)\" class=\"clean\">remove</button></li></ul></li><li><label>project images</label></li><li><ap-uploader config=\"vm.uploaderConfig\" uploading=\"vm.uploaderUploading\" has-errors=\"vm.uploaderHasErrors\" has-files=\"vm.uploaderHasFiles\"></ap-uploader></li><li><button ng-click=\"vm.create()\" class=\"action\">post status to timeline</button></li></ul></form>");
+angular.module("appirio-tech-ng-status-report").run(["$templateCache", function($templateCache) {$templateCache.put("views/create-status-report.directive.html","<loader ng-show=\"false\"></loader><form><ul><li><label>project status</label></li><li><label>status message</label></li><li><textarea placeholder=\"Status message\" ng-model=\"vm.statusReport.text\" class=\"widest\"></textarea></li><li><label>project links</label></li><li class=\"project-links\"><div class=\"flex middle\"><input type=\"url\" placeholder=\"http://www.example.com\" ng-model=\"vm.currentLink\" class=\"wider\"/><button ng-click=\"vm.addLink()\" class=\"clean plus\"><div class=\"icon plus hollow\"></div></button></div><ul><li ng-repeat=\"link in vm.statusReport.links track by $index\" class=\"flex middle space-between\"><p class=\"link\">{{link.url}}</p><button ng-click=\"vm.removeLink(link)\" class=\"clean\">remove</button></li></ul></li><li><label>project images</label></li><li><ap-uploader config=\"vm.uploaderConfig\" uploading=\"vm.uploaderUploading\" has-errors=\"vm.uploaderHasErrors\" has-files=\"vm.uploaderHasFiles\" file-array=\"vm.uploaderFiles\"></ap-uploader></li><li><button ng-click=\"vm.create()\" class=\"action\">post status to timeline</button></li></ul></form>");
 $templateCache.put("views/detail-status-report.directive.html","<loader ng-show=\"false\"></loader><h3>{{vm.report.createdAt | date:\'MMMM d yyyy\'}} status report</h3><hr class=\"biggest\"/><time>{{vm.report.createdAt | timeLapse }}</time><p class=\"message\">{{vm.report.text}}</p><ul class=\"links\"><li ng-repeat=\"link in vm.report.links\"><a href=\"{{link.url}}\">{{link.url}}</a></li></ul><ul class=\"files flex wrap\"><li ng-repeat=\"image in vm.report.images\"><a href=\"{{image.preSignedURL}}\"><img src=\"{{image.preSignedURL}}\"/></a></li></ul>");
 $templateCache.put("views/past-status-reports.directive.html","<loader ng-show=\"false\"></loader><ul class=\"links\"><li ng-repeat=\"report in vm.pastReports track by $index\" class=\"flex middle\"><div class=\"bullet\"></div><button class=\"clean\"><a ui-sref=\"copilot-status-report-details({id: vm.workId, reportId: report.id})\">{{report.createdAt | date:\'MMMM d yyyy\' }}</a></button></li></ul>");
 $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows\"><nav><h6>past status reports</h6><past-status-reports work-id=\"{{vm.workId}}\"></past-status-reports></nav><main><h3>create status report</h3><hr class=\"biggest\"/><create-status-report work-id=\"{{vm.workId}}\"></create-status-report></main></div>");}]);
@@ -100,6 +100,7 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
     vm.uploaderUploading = null;
     vm.uploaderHasErrors = null;
     vm.uploaderHasFiles = null;
+    vm.uploaderFiles = null;
     vm.currentLink = '';
     vm.statusReport = {
       text: null,
@@ -156,7 +157,7 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
       domain = API_URL;
       category = 'work';
       uploaderConfig = {
-        name: assetType + "-uploader-" + workId + "-" + Date.now,
+        name: assetType + "-uploader-" + workId + "-" + (Date.now()),
         allowMultiple: true,
         query: {
           url: domain + '/v3/attachments',
@@ -191,7 +192,19 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
       return uploaderConfig;
     };
     activate = function() {
-      vm.uploaderConfig = configureUploader(vm.workId, 'report');
+      vm.uploaderConfig = configureUploader(vm.workId, 'status-report-image');
+      $scope.$watch('vm.uploaderFiles', function(newFiles) {
+        if (newFiles != null ? newFiles.length : void 0) {
+          return vm.statusReport.images = newFiles.map(function(file) {
+            return {
+              path: file.createRecord.params.filePath,
+              fileId: file.fileId
+            };
+          });
+        } else {
+          return vm.statusReport.images = [];
+        }
+      });
       return vm;
     };
     return activate();
