@@ -1,18 +1,9 @@
 loader(ng-show="false")
 
 ul.links
-  li.flex.middle
+  li.flex.middle(ng-repeat="report in vm.pastReports track by $index")
     .bullet
 
-    a(href="http://www.example.com") April 7 2015
-
-  li.flex.middle
-    .bullet
-
-    a(href="http://www.example.com") April 7 2015
-
-  li.flex.middle
-    .bullet
-
-    a(href="http://www.example.com") April 7 2015
+    button.clean
+      a(ui-sref="copilot-status-report-details({id: vm.workId, reportId: report.id})") {{report.createdAt | date:'MMMM d yyyy' }}
 

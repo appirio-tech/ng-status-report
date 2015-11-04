@@ -6,40 +6,36 @@ form
       label project status
 
     li
-      select.wide
-        option(value="") project status
-
-    li
       label status message
 
     li
-      textarea.widest(placeholder="Status message")
+      textarea.widest(placeholder="Status message" ng-model="vm.statusReport.text")
 
     li
       label project links
 
     li.project-links
       .flex.middle
-        input.wider(type="text" placeholder="http://www.example.com")
+        input.wider(type="url" placeholder="http://www.example.com" ng-model="vm.currentLink")
 
-        button.clean.plus
+        button.clean.plus(ng-click="vm.addLink()")
           .icon.plus.hollow
 
       ul
-        li.flex.middle.space-between
-          p.link http://www.example.com
+        li.flex.middle.space-between(ng-repeat="link in vm.statusReport.links track by $index")
+          p.link {{link.url}}
 
-          button.clean remove
-
-        li.flex.middle.space-between
-          p.link http://www.example.com
-
-          button.clean remove
+          button.clean(ng-click="vm.removeLink(link)") remove
 
     li
       label project images
 
-    li (WIP file upload goes here)
+      ap-uploader(
+        config="vm.uploaderConfig"
+        uploading="vm.uploaderUploading"
+        has-errors="vm.uploaderHasErrors"
+        has-files="vm.uploaderHasFiles"
+      )
 
     li
-      button.action post status to timeline
+      button.action(ng-click="vm.create()") post status to timeline

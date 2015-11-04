@@ -19,16 +19,16 @@ angular.module("app.constants", [])
   'use strict';
   var dependencies;
 
-  dependencies = ['ui.router', 'ngResource', 'app.constants', 'appirio-tech-ng-status-report'];
+  dependencies = ['ui.router', 'ngResource', 'app.constants', 'ap-file-upload', 'appirio-tech-ng-status-report'];
 
   angular.module('example', dependencies);
 
 }).call(this);
 
 angular.module("example").run(["$templateCache", function($templateCache) {$templateCache.put("views/create.example.html","<create-status-report></create-status-report>");
-$templateCache.put("views/detail.example.html","<detail-status-report></detail-status-report>");
+$templateCache.put("views/detail.example.html","<detail-status-report work-id=\"123\" report-id=\"123\"></detail-status-report>");
 $templateCache.put("views/past-reports.example.html","<past-status-reports></past-status-reports>");
-$templateCache.put("views/status-reports.example.html","<status-reports></status-reports>");}]);
+$templateCache.put("views/status-reports.example.html","<status-reports work-id=\"123\"></status-reports>");}]);
 (function() {
   'use strict';
   var config;
@@ -46,8 +46,8 @@ $templateCache.put("views/status-reports.example.html","<status-reports></status
       title: 'create',
       templateUrl: 'views/create.example.html'
     };
-    states['detail'] = {
-      url: '/detail',
+    states['copilot-status-report-details'] = {
+      url: '/detail/:id',
       title: 'detail',
       templateUrl: 'views/detail.example.html'
     };
