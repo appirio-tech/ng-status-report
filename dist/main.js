@@ -102,8 +102,6 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
     vm.uploaderHasFiles = null;
     vm.uploaderFiles = null;
     vm.currentLink = '';
-    vm.currentCaption = '';
-    vm.captions = [];
     vm.statusReport = {
       text: null,
       links: [],
@@ -131,23 +129,10 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
         return vm.currentLink = '';
       }
     };
-    vm.addCaption = function() {
-      if (vm.currentCaption.length) {
-        vm.captions.push(vm.currentCaption);
-        return vm.currentCaption = '';
-      }
-    };
     vm.removeLink = function(link) {
       return vm.statusReport.links.forEach(function(vmLink, index) {
         if (vmLink.url === link.url) {
           return vm.statusReport.links.splice(index, 1);
-        }
-      });
-    };
-    vm.removeCaption = function(caption) {
-      return vm.captions.forEach(function(vmCaption, index) {
-        if (vmCaption === caption) {
-          return vm.captions.splice(index, 1);
         }
       });
     };
@@ -217,10 +202,6 @@ $templateCache.put("views/status-reports.directive.html","<div class=\"flex rows
   CreateController.$inject = ['$scope', '$state', 'API_URL', 'StatusReportAPIService'];
 
   angular.module('appirio-tech-ng-status-report').controller('CreateController', CreateController);
-
-  ({
-    captions: []
-  });
 
 }).call(this);
 
