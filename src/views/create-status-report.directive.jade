@@ -30,25 +30,11 @@ form
     li
       label project images
 
-    li
-      .flex.middle
-        input.wider(type="text" placeholder="Image caption" ng-model="vm.currentCaption")
-
-        button.clean.plus(ng-click="vm.addCaption()")
-          .icon.plus.hollow
-
-      ul
-        li.flex.middle.space-between(ng-repeat="caption in vm.captions track by $index")
-          p.caption {{caption}}
-
-          button.clean(ng-click="vm.removeCaption(caption)") remove
-
       ap-uploader(
         config="vm.uploaderConfig"
         uploading="vm.uploaderUploading"
         has-errors="vm.uploaderHasErrors"
         has-files="vm.uploaderHasFiles"
-        file-array="vm.uploaderFiles"
       )
 
     li

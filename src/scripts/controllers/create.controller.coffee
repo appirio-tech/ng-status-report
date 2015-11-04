@@ -67,11 +67,12 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
     uploaderConfig =
       name: "#{assetType}-uploader-#{workId}-#{Date.now()}"
       allowMultiple: true
-      query:
-        url: domain + '/v3/attachments'
-        params:
-          filter: "id=#{workId}&assetType=#{assetType}&category=#{category}"
-          fields: 'url'
+      allowCaptions: true
+      onCaptionChange: (data) ->
+        vm.statusReport.images.push
+          caption: data.caption
+          fileId: data.id
+          path: data.path
       presign:
         url: domain + '/v3/attachments/uploadurl'
         params:
@@ -93,15 +94,6 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
 
   activate = ->
     vm.uploaderConfig = configureUploader(vm.workId, 'status-report-image')
-
-    $scope.$watch 'vm.uploaderFiles', (newFiles) ->
-      if newFiles?.length
-        vm.statusReport.images = newFiles.map (file, index) ->
-          caption: vm.captions[index]
-          path: file.createRecord.params.filePath
-          fileId: file.fileId
-      else
-        vm.statusReport.images = []
 
     vm
 
