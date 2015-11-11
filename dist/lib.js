@@ -35577,16 +35577,23 @@ angular.module('ui.router.state')
       this.hasFiles = false;
     }
 
+    Uploader.prototype.onCaptionChange = function() { /* noop */ };
+
     Uploader.prototype.config = function(options) {
       options = options || {};
 
       this.allowMultiple = options.allowMultiple || false;
       this.allowDuplicates = options.allowDuplicates || false;
+      this.allowCaptions = options.allowCaptions || false;
 
       this.presign = options.presign || null;
       this.query = options.query || null;
       this.createRecord = options.createRecord || null;
       this.removeRecord = options.removeRecord || null;
+
+      if (options.onCaptionChange) {
+        this.onCaptionChange = options.onCaptionChange;
+      }
 
       if (options.presign) {
         this.presign.resource = $resource(options.presign.url);
@@ -35635,27 +35642,27 @@ angular.module('ui.router.state')
           hasErrors = true;
         }
       });
-      uploader.fileArray = filelistToArray(uploader.files);
       uploader.uploading = uploading;
       uploader.hasErrors = hasErrors;
       uploader.hasFiles = uploader.files.length > 0
     };
 
-    Uploader.prototype._add = function(file, options) {
+    Uploader.prototype._add = function(fileData, options) {
       var deferred = $q.defer();
       var uploader = this;
 
       // TODO: Prompt user to confirm replacing file
       var replace = true;
-      var dupePosition = uploader._indexOfFilename(file.name);
+      var dupePosition = uploader._indexOfFilename(fileData.name);
       var dupe = dupePosition >= 0;
 
-      var newFile = uploader._newFile(file, options);
+      var newFile = uploader._newFile(fileData, options);
 
       if (dupe) {
         if (replace) {
           uploader.files[dupePosition].remove().then(function() {
             uploader.files[dupePosition] = newFile;
+            uploader.onUpdate();
           });
         } else {
           deferred.reject('DUPE');
@@ -35694,10 +35701,13 @@ angular.module('ui.router.state')
 
         files.forEach(function(file) {
           uploader._add({
-            name: file.fileName
+            id: file.fileId,
+            name: file.fileName,
+            path: file.filePath,
+            size: file.fileSize,
+            type: file.fileType
           }, {
             newFile: false,
-            fileId: file.fileId
           });
         });
       });
@@ -35711,6 +35721,7 @@ angular.module('ui.router.state')
       options.query = uploader.query || null;
       options.createRecord = uploader.createRecord || null;
       options.removeRecord = uploader.removeRecord || null;
+      options.allowCaptions = uploader.allowCaptions || false;
 
       file = new File(file, options);
 
@@ -35734,11 +35745,16 @@ angular.module('ui.router.state')
         uploader._remove(file);
       };
 
+      file.onCaptionChange = function(fileData) {
+        uploader.onCaptionChange(fileData)
+        uploader.onUpdate();
+      }
+
       return file;
     };
 
     Uploader.prototype._remove = function(file) {
-      this.files.splice(this._indexOfFilename(file.name), 1);
+      this.files.splice(this._indexOfFilename(file.data.name), 1);
       this.onUpdate();
 
       return $q.when(true);
@@ -35748,7 +35764,7 @@ angular.module('ui.router.state')
       var uploader = this;
 
       for (var i = 0; i < uploader.files.length; i++) {
-        if (uploader.files[i].name === name) return i;
+        if (uploader.files[i].data.name === name) return i;
       }
 
       return -1;
@@ -35785,9 +35801,9 @@ angular.module('ui.router.state')
       options = angular.copy(options);
 
       file.data = data;
-      file.name = data.name;
       file.newFile = options.newFile !== false;
       file.locked = options.locked || false;
+      file.allowCaptions = options.allowCaptions || false;
 
       file.presign = options.presign || null;
       file.query = options.query || null;
@@ -35795,7 +35811,6 @@ angular.module('ui.router.state')
       file.removeRecord = options.removeRecord || null;
 
       if (!file.newFile) {
-        file.fileId = options.fileId;
         file.uploading = false;
         file.hasErrors = false;
       }
@@ -35832,11 +35847,27 @@ angular.module('ui.router.state')
       });
     };
 
+    File.prototype.setCaption = function(caption) {
+      var file = this;
+
+      file.data.caption = caption;
+
+      file.onCaptionChange({
+        caption: file.data.caption,
+        id: file.data.id,
+        name: file.data.name,
+        path: file.data.path,
+        size: file.data.size,
+        type: file.data.type
+      });
+    };
+
     File.prototype.onStart = function() { /* noop */ };
     File.prototype.onRemove = function() { /* noop */ };
     File.prototype.onProgress = function() { /* noop */ };
     File.prototype.onSuccess = function() { /* noop */ };
     File.prototype.onFailure = function() { /* noop */ };
+    File.prototype.onCaptionChange = function() { /* noop */ };
 
     //
     // Private methods
@@ -35867,7 +35898,7 @@ angular.module('ui.router.state')
 
     File.prototype._deleteFileRecord = function() {
       var params = this.removeRecord.params || {};
-      params.fileId = this.fileId;
+      params.fileId = this.data.id;
 
       return this.removeRecord.resource.delete(params).$promise;
     };
@@ -35905,7 +35936,9 @@ angular.module('ui.router.state')
     }
 
     function storeFilePath(content) {
-      this.createRecord.params.filePath = content.filePath;
+      var file = this;
+
+      file.data.path = content.filePath;
       return content;
     }
 
@@ -35977,6 +36010,7 @@ angular.module('ui.router.state')
       };
 
       params.param.fileName = this.data.name;
+      params.param.filePath = this.data.path;
       params.param.fileType = this.data.type;
       params.param.fileSize = this.data.size;
 
@@ -35986,7 +36020,7 @@ angular.module('ui.router.state')
     function fileRecordSuccess(response) {
       var file = this;
       
-      file.fileId = response.result.content.fileId;
+      file.data.id = response.result.content.fileId;
       file.hasErrors = false;
       file.uploading = false;
       file.onSuccess(response);
@@ -36152,11 +36186,20 @@ angular.module('ui.router.state')
   function FileController($scope) {
     var vm = this;
     vm.file = $scope.file;
+    vm.allowCaptions = vm.file.allowCaptions;
+    vm.caption = '';
+
+    vm.setCaption = function () {
+      if (vm.caption.length) {
+        vm.file.setCaption(vm.caption);
+        vm.caption = '';
+      }
+    }
   }
-  
+
 })();
 
-angular.module("ap-file-upload").run(["$templateCache", function($templateCache) {$templateCache.put("file.html","<div ng-class=\"{\'failed\': vm.file.hasErrors}\" class=\"uploader\"><div class=\"fileName\"><span>{{vm.file.name}}</span></div><div class=\"fileActions\"><button ng-show=\"vm.file.uploading\" ng-click=\"vm.file.cancel()\" type=\"button\">Cancel</button><button ng-show=\"!vm.file.uploading\" ng-click=\"vm.file.remove()\" type=\"button\">Remove</button><button ng-show=\"vm.file.hasErrors\" ng-click=\"vm.file.retry()\" type=\"button\">Retry</button><p ng-show=\"vm.file.hasErrors\">Upload Failed</p><progress ng-show=\"vm.file.uploading\" value=\"{{vm.file.progress}}\" max=\"100\">{{vm.file.progress}}%</progress></div></div>");
+angular.module("ap-file-upload").run(["$templateCache", function($templateCache) {$templateCache.put("file.html","<div ng-class=\"{\'failed\': vm.file.hasErrors}\" class=\"uploader\"><div class=\"fileName\"><span>{{vm.file.data.name}}</span></div><div class=\"fileActions\"><button ng-show=\"vm.file.uploading\" ng-click=\"vm.file.cancel()\" type=\"button\">Cancel</button><button ng-show=\"!vm.file.uploading\" ng-click=\"vm.file.remove()\" type=\"button\">Remove</button><button ng-show=\"vm.file.hasErrors\" ng-click=\"vm.file.retry()\" type=\"button\">Retry</button><p ng-show=\"vm.file.hasErrors\">Upload Failed</p><progress ng-show=\"vm.file.uploading\" value=\"{{vm.file.progress}}\" max=\"100\">{{vm.file.progress}}%</progress><p ng-if=\"vm.file.data.caption\">{{vm.file.data.caption}}</p><input ng-if=\"vm.allowCaptions\" type=\"text\" ng-model=\"vm.caption\"/><button ng-if=\"vm.allowCaptions\" ng-click=\"vm.setCaption()\">Edit Caption</button></div></div>");
 $templateCache.put("uploader.html","<div class=\"uploaderWrapper\"><input ng-if=\"vm.allowMultiple\" multiple=\"\" type=\"file\" on-file-change=\"vm.uploader.add(fileList)\"/><input ng-if=\"!vm.allowMultiple\" type=\"file\" on-file-change=\"vm.uploader.add(fileList)\"/><ul class=\"uploaderFiles\"><li ng-repeat=\"file in vm.uploader.files\"><ap-file file=\"file\"></ap-file></li></ul></div>");}]);
 (function() {
   'use strict';
@@ -36169,12 +36212,13 @@ $templateCache.put("uploader.html","<div class=\"uploaderWrapper\"><input ng-if=
 }).call(this);
 
 angular.module("appirio-tech-ng-ui-components").run(["$templateCache", function($templateCache) {$templateCache.put("views/avatar.directive.html","<img ng-src=\"{{ vm.avatarUrl }}\" ng-show=\"vm.avatarUrl\" class=\"avatar\"/><svg class=\"avatar\" ng-hide=\"vm.avatarUrl\" version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 512 512\" enable-background=\"new 0 0 512 512\" xml:space=\"preserve\"><path fill=\"#020201\" d=\"M454.426,392.582c-5.439-16.32-15.298-32.782-29.839-42.362c-27.979-18.572-60.578-28.479-92.099-39.085 c-7.604-2.664-15.33-5.568-22.279-9.7c-6.204-3.686-8.533-11.246-9.974-17.886c-0.636-3.512-1.026-7.116-1.228-10.661 c22.857-31.267,38.019-82.295,38.019-124.136c0-65.298-36.896-83.495-82.402-83.495c-45.515,0-82.403,18.17-82.403,83.468 c0,43.338,16.255,96.5,40.489,127.383c-0.221,2.438-0.511,4.876-0.95,7.303c-1.444,6.639-3.77,14.058-9.97,17.743 c-6.957,4.133-14.682,6.756-22.287,9.42c-31.521,10.605-64.119,19.957-92.091,38.529c-14.549,9.58-24.403,27.159-29.838,43.479 c-5.597,16.938-7.886,37.917-7.541,54.917h205.958h205.974C462.313,430.5,460.019,409.521,454.426,392.582z\"/></svg>");
-$templateCache.put("views/checkbox.directive.html","<div class=\"flex middle\"><button ng-class=\"{\'checked\': ngModel}\" ng-click=\"vm.toggle()\" type=\"button\" class=\"clean\"><div src=\"/images/icon-plus.svg\" ng-hide=\"ngModel\" class=\"icon plus hollow\"></div><img src=\"/images/icon-check-solid.svg\" ng-show=\"ngModel\" class=\"icon check-solid\"/></button><label ng-if=\"label\" ng-click=\"vm.toggle()\">{{ label }}</label></div>");
+$templateCache.put("views/checkbox.directive.html","<div class=\"flex middle\"><button ng-class=\"{\'checked\': ngModel}\" ng-click=\"vm.toggle()\" type=\"button\" class=\"clean\"><div ng-hide=\"ngModel\" class=\"icon plus hollow\"></div><div ng-show=\"ngModel\" class=\"icon checkmark active\"></div></button><label ng-if=\"label\" ng-click=\"vm.toggle()\">{{ label }}</label></div>");
 $templateCache.put("views/countdown.directive.html","<ul class=\"countdown\"><li ng-if=\"vm.days &gt; 0\"><span class=\"value\">{{ vm.days }}</span><span class=\"unit\">day<span ng-if=\"vm.days &gt; 1\">s</span></span></li><li ng-if=\"vm.hours &gt; 0 || vm.days &gt; 0\"><span class=\"value\">{{ vm.hours }}</span><span class=\"unit\">hr<span ng-if=\"vm.hours &gt; 1\">s</span></span></li><li ng-if=\"vm.minutes &gt; 0 || vm.hours &gt; 0 || vm.days &gt; 0\"><span class=\"value\">{{ vm.minutes }}</span><span class=\"unit\">min<span ng-if=\"vm.minutes &gt; 1\">s</span></span></li><li><span class=\"value\">{{ vm.seconds }}</span><span class=\"unit\">sec<span ng-if=\"vm.seconds &gt; 1\">s</span></span></li></ul>");
 $templateCache.put("views/loader.directive.html","<div class=\"container\"><div class=\"loader\"></div></div>");
 $templateCache.put("views/modal.directive.html","");
 $templateCache.put("views/selectable.directive.html","<div ng-show=\"!label &amp;&amp; !vm.isSelected()\">Select</div><div ng-show=\"!label &amp;&amp; vm.isSelected()\">Selected</div><div ng-show=\"label\">{{ label }}</div><div class=\"icon-container\"><div class=\"icon checkmark-white smallest\"></div></div>");
-$templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\'checked\': vm.isSelected(), \'action\': vm.isSelected()}\" ng-click=\"vm.toggle()\" type=\"button\"><p ng-show=\"!label &amp;&amp; !vm.isSelected()\">Select</p><p ng-show=\"!label &amp;&amp; vm.isSelected()\">Selected</p><p ng-show=\"label\">{{ label }}</p><div class=\"icon-container\"><div class=\"icon checkmark-white smallest\"></div></div></button>");}]);
+$templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\'checked\': vm.isSelected(), \'action\': vm.isSelected()}\" ng-click=\"vm.toggle()\" type=\"button\"><p ng-show=\"!label &amp;&amp; !vm.isSelected()\">Select</p><p ng-show=\"!label &amp;&amp; vm.isSelected()\">Selected</p><p ng-show=\"label\">{{ label }}</p><div class=\"icon-container\"><div class=\"icon checkmark-white smallest\"></div></div></button>");
+$templateCache.put("views/simple-countdown.directive.html","<p>{{vm.timeRemaining}} left</p>");}]);
 (function() {
   'use strict';
   var directive;
@@ -36212,6 +36256,26 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
   };
 
   angular.module('appirio-tech-ng-ui-components').directive('countdown', directive);
+
+}).call(this);
+
+(function() {
+  'use strict';
+  var directive;
+
+  directive = function() {
+    return {
+      restrict: 'E',
+      templateUrl: 'views/simple-countdown.directive.html',
+      controller: 'SimpleCountdownController',
+      controllerAs: 'vm',
+      scope: {
+        end: '@end'
+      }
+    };
+  };
+
+  angular.module('appirio-tech-ng-ui-components').directive('simpleCountdown', directive);
 
 }).call(this);
 
@@ -36364,10 +36428,14 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
       $element.addClass('selected-button');
       $scope.$watch($scope.vm.isSelected, function() {
         $element.removeClass('checked');
-        $element.removeClass('action');
+        if (typeof attrs.selectable === 'string') {
+          $element.removeClass(attrs.selectable);
+        }
         if ($scope.vm.isSelected()) {
           $element.addClass('checked');
-          return $element.addClass('action');
+          if (typeof attrs.selectable === 'string') {
+            return $element.addClass(attrs.selectable);
+          }
         }
       });
       return $element.bind('click', function() {
@@ -36594,6 +36662,69 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
 
 (function() {
   'use strict';
+  var dir;
+
+  dir = function($window) {
+    var elements, link, lockHeight;
+    elements = [];
+    lockHeight = function($element) {
+      var attr, childrenWithClass, classToToggle;
+      attr = $element.attr('lock-height');
+      if (typeof attr === 'string') {
+        classToToggle = attr;
+      }
+      $element.css('height', 'auto');
+      $element.css('max-height', 'none');
+      if (classToToggle) {
+        childrenWithClass = $element.find('.' + classToToggle);
+        childrenWithClass.removeClass(classToToggle);
+      }
+      if (classToToggle) {
+        $element.removeClass(classToToggle);
+      }
+      $element.css('max-height', $element.height() + 'px');
+      if ($element.attr('retain-class') === 'true') {
+        if (classToToggle) {
+          $element.addClass(classToToggle);
+        }
+        if (childrenWithClass) {
+          return childrenWithClass.addClass(classToToggle);
+        }
+      }
+    };
+    $($window).bind('resize', function() {
+      var element, i, len, results;
+      results = [];
+      for (i = 0, len = elements.length; i < len; i++) {
+        element = elements[i];
+        results.push(lockHeight(element));
+      }
+      return results;
+    });
+    link = function(scope, element, attrs) {
+      elements.push($(element[0]));
+      return element.ready(function() {
+        return lockHeight($(element[0]));
+      });
+    };
+    return {
+      restrict: 'A',
+      link: link,
+      priority: -1,
+      scope: {
+        retainClass: '@retainClass'
+      }
+    };
+  };
+
+  dir.$inject = ['$window'];
+
+  angular.module('appirio-tech-ng-ui-components').directive('lockHeight', dir);
+
+}).call(this);
+
+(function() {
+  'use strict';
   var AvatarController;
 
   AvatarController = function($scope) {
@@ -36648,6 +36779,29 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
   CountdownController.$inject = ['$scope'];
 
   angular.module('appirio-tech-ng-ui-components').controller('CountdownController', CountdownController);
+
+}).call(this);
+
+(function() {
+  'use strict';
+  var SimpleCountdownController;
+
+  SimpleCountdownController = function($scope) {
+    var activate, timeRemaining, vm;
+    vm = this;
+    timeRemaining = 0;
+    activate = function() {
+      $scope.$watch('end', function(newValue) {
+        return vm.timeRemaining = moment(newValue).fromNow(true);
+      });
+      return vm;
+    };
+    return activate();
+  };
+
+  SimpleCountdownController.$inject = ['$scope'];
+
+  angular.module('appirio-tech-ng-ui-components').controller('SimpleCountdownController', SimpleCountdownController);
 
 }).call(this);
 
@@ -36746,8 +36900,11 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
   var filter;
 
   filter = function() {
-    return function(createdAt) {
-      return moment(createdAt).fromNow();
+    return function(createdAt, hideSuffix) {
+      if (hideSuffix == null) {
+        hideSuffix = false;
+      }
+      return moment(createdAt).fromNow(hideSuffix);
     };
   };
 
@@ -37343,20 +37500,12 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
 
 (function() {
   'use strict';
-  var srv, transformIdOnlyResponse, transformResponse;
+  var srv, transformResponse;
 
   transformResponse = function(response) {
     var parsed, ref;
     parsed = JSON.parse(response);
     return (parsed != null ? (ref = parsed.result) != null ? ref.content : void 0 : void 0) || [];
-  };
-
-  transformIdOnlyResponse = function(response) {
-    var parsed, ref;
-    parsed = JSON.parse(response);
-    return {
-      id: parsed != null ? (ref = parsed.result) != null ? ref.content : void 0 : void 0
-    };
   };
 
   srv = function($resource, API_URL) {
@@ -37368,11 +37517,11 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
     methods = {
       put: {
         method: 'PUT',
-        transformResponse: transformIdOnlyResponse
+        transformResponse: transformResponse
       },
       post: {
         method: 'POST',
-        transformResponse: transformIdOnlyResponse
+        transformResponse: transformResponse
       },
       get: {
         transformResponse: transformResponse
@@ -37578,6 +37727,54 @@ $templateCache.put("views/selected-button.directive.html","<button ng-class=\"{\
   srv.$inject = ['$resource', 'API_URL'];
 
   angular.module('appirio-tech-ng-api-services').factory('profilesAPIService', srv);
+
+}).call(this);
+
+(function() {
+  'use strict';
+  var srv, transformIdOnlyResponse, transformResponse;
+
+  transformResponse = function(response) {
+    var parsed, ref;
+    parsed = JSON.parse(response);
+    return (parsed != null ? (ref = parsed.result) != null ? ref.content : void 0 : void 0) || [];
+  };
+
+  transformIdOnlyResponse = function(response) {
+    var parsed, ref;
+    parsed = JSON.parse(response);
+    return {
+      id: parsed != null ? (ref = parsed.result) != null ? ref.content : void 0 : void 0
+    };
+  };
+
+  srv = function($resource, API_URL) {
+    var methods, params, url;
+    url = API_URL + '/v3/projects/copilot/unclaimed';
+    params = {};
+    methods = {
+      put: {
+        method: 'PUT',
+        transformResponse: transformIdOnlyResponse
+      },
+      post: {
+        method: 'POST',
+        transformResponse: transformIdOnlyResponse
+      },
+      get: {
+        transformResponse: transformResponse
+      },
+      query: {
+        isArray: true,
+        transformResponse: transformResponse
+      }
+    };
+    return $resource(url, params, methods);
+  };
+
+  srv.$inject = ['$resource', 'API_URL'];
+
+  angular.module('appirio-tech-ng-api-services').factory('CopilotUnclaimedProjectsAPIService', srv);
 
 }).call(this);
 
