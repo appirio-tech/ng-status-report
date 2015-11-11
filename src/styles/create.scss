@@ -4,6 +4,10 @@ create-status-report {
   display: block;
   position: relative;
 
+  label {
+    font-weight: $font-weight;
+  }
+
   ul {
     li {
       margin-top: $margin-small;
@@ -19,10 +23,8 @@ create-status-report {
   }
 
   button {
-    margin-top: $margin;
-
     &.plus {
-      margin-left: $margin-smallest;
+      margin-left: 20px;
     }
   }
 
@@ -30,7 +32,7 @@ create-status-report {
     display: inline-block;
 
     ul {
-      margin: $margin-small 0 0 $margin-small;
+      padding: 10px 0 0 10px;
     }
 
     li {

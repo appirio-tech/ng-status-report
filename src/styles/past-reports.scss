@@ -5,8 +5,6 @@ past-status-reports {
   position  : relative;
 
   .links {
-    font-size: 16px;
-
     .bullet {
       width           : 10px;
       height          : 10px;
@@ -14,12 +12,12 @@ past-status-reports {
     }
 
     li {
-      margin-top: $margin-small;
+      margin-top: 34px;
 
       a {
-        font-size     : $font-size-small;
+        font-size     : $font-size-big;
         color         : $black;
-        margin-left   : $margin-smallest;
+        margin-left   : 15px;
         text-transform: uppercase;
 
         &:hover {

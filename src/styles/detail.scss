@@ -3,9 +3,19 @@
 detail-status-report {
   display   : block;
   position  : relative;
+  text-align: center;
 
-  .message, .links, .files {
-    margin-top: $margin;
+  .message, .files {
+    margin-top: 45px;
+  }
+
+  .links {
+    margin-top: 20px;
+  }
+
+  time {
+    margin-top: 10px;
+    display: block;
   }
 
   .links {
@@ -21,13 +31,13 @@ detail-status-report {
 
     a {
       display : inline-block;
-      width   : 160px;
-      height  : 120px;
+      width   : 200px;
+      height  : 150px;
       overflow: hidden;
     }
 
     img {
-      width: 160px;
+      width: 200px;
     }
   }
 }

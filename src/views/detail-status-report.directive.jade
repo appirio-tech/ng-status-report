@@ -1,8 +1,6 @@
 loader(ng-show="false")
 
-h3 {{vm.report.createdAt | date:'MMMM d yyyy'}} status report
-
-hr.biggest
+h1   {{vm.report.createdAt | date:'MMMM d yyyy'}} status report
 
 time {{vm.report.createdAt | timeLapse }}
 
@@ -12,7 +10,7 @@ ul.links
   li(ng-repeat="link in vm.report.links")
     a(href="{{link.url}}") {{link.url}}
 
-ul.files.flex.wrap
+ul.files.flex.wrap.center
   li(ng-repeat="image in vm.report.images")
     a(href="{{image.preSignedURL}}")
       img(src="{{image.preSignedURL}}")

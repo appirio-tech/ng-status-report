@@ -1,8 +1,15 @@
 @import "work-includes";
 
 status-reports {
+  display: block;
+
   nav {
     margin-top: $margin;
     width: 300px;
   }
+
+  create-status-report {
+    margin-top: 30px;
+  }
+
 }
