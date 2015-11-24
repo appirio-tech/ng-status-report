@@ -3,13 +3,13 @@ loader(ng-show="false")
 form
   ul
     li
-      label status message
+      label status update
 
     li
-      textarea.widest(placeholder="Status message" ng-model="vm.statusReport.text")
+      textarea.widest(placeholder="Please provide a short status update to the customer. Be sure to describe  the progress, mention issues, and respond to any prior customer questions." ng-model="vm.statusReport.text")
 
     li
-      label project links
+      label Links to demos and code
 
     li.project-links
       .flex.middle
@@ -25,7 +25,7 @@ form
           button.clean(ng-click="vm.removeLink(link)") remove
 
     li
-      label project images
+      label Screenshots and documents
 
     li
       ap-uploader(
@@ -36,4 +36,4 @@ form
       )
 
     li
-      button.action(ng-click="vm.create()") post status to timeline
+      button.action(ng-click="vm.create()") send to customer
