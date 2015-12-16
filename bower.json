@@ -19,7 +19,7 @@
     "angular": "^1.4.x",
     "moment": "^2.10.x",
     "appirio-tech-ng-file-upload": "0.x.x",
-    "appirio-tech-ng-ui-components": "0.x.x",
+    "appirio-tech-ng-ui-components": "1.x.x",
     "appirio-tech-ng-api-services": "0.x.x"
   },
   "ignore": [
