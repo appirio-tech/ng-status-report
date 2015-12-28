@@ -1,4 +1,4 @@
-@import "work-includes";
+@import "work/work-includes";
 
 detail-status-report {
   display   : block;
@@ -20,13 +20,13 @@ detail-status-report {
 
   .links {
     li {
-      margin-top: $margin-smallest;
+      margin-top: 10px;
     }
   }
 
   .files {
     li {
-      margin: 0 $margin-small $margin-small 0;
+      margin: 0 15px 15px 0;
     }
 
     a {

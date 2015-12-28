@@ -1,4 +1,4 @@
-@import "work-includes";
+@import "work/work-includes";
 
 past-status-reports {
   display   : block;
@@ -15,7 +15,7 @@ past-status-reports {
       margin-top: 34px;
 
       a {
-        font-size     : $font-size-big;
+        font-size     : 16px;
         color         : $black;
         margin-left   : 15px;
         text-transform: uppercase;

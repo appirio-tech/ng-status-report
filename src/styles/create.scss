@@ -1,19 +1,19 @@
-@import "work-includes";
+@import "work/work-includes";
 
 create-status-report {
   display: block;
   position: relative;
 
   label {
-    font-weight: $font-weight;
+    font-weight: 400;
   }
 
   ul {
     li {
-      margin-top: $margin-small;
+      margin-top: 15px;
 
       &:nth-child(odd) {
-        margin-top: $margin;
+        margin-top: 30px;
       }
 
       &:first-child {
@@ -36,7 +36,7 @@ create-status-report {
     }
 
     li {
-      margin-top: $margin-smallest;
+      margin-top: 10px;
     }
 
     button {
