@@ -1,5 +1,3 @@
-require.context './styles/', true, /^(.*\.(scss$))[^.]*$/igm
-
 require 'appirio-tech-ng-file-upload'
 require './scripts/status-report.module'
 
@@ -9,10 +7,12 @@ requireContextFiles = (files) ->
   for path in paths
     files path
 
+styles      = require.context './styles/', true, /^(.*\.(scss$))[^.]*$/igm
 directives  = require.context './scripts/', true, /^(.*\.(directive\.coffee$))[^.]*$/igm
 controllers = require.context './scripts/', true, /^(.*\.(controller\.coffee$))[^.]*$/igm
 views       = require.context './views/', true, /^(.*\.(jade$))[^.]*$/igm
 
+requireContextFiles styles
 requireContextFiles directives
 requireContextFiles controllers
 
