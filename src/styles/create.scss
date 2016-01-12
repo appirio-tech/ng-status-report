@@ -28,19 +28,45 @@ create-status-report {
     }
   }
 
+  textarea {
+    max-width: 400px;
+  }
+
   .project-links {
     display: inline-block;
+    width: 100%;
+    max-width: 250px;
 
     ul {
-      padding: 10px 0 0 10px;
+      margin-top: 10px;
     }
 
     li {
       margin-top: 10px;
+
+      &:nth-child(odd) {
+        margin-top: 10px;
+      }
     }
 
     button {
       text-transform: lowercase;
+    }
+  }
+
+  .upload-files {
+    ul {
+      li {
+        margin-top: inherit;
+
+        &:nth-child(odd) {
+          margin-top: inherit;
+        }
+
+        &:first-child {
+          margin-top: inherit;
+        }
+      }
     }
   }
 }
