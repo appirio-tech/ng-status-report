@@ -38,6 +38,16 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
       if vmLink.url == link.url
         vm.statusReport.links.splice(index, 1)
 
+  vm.addImage = (data) ->
+    imageUploaded = false
+
+    vm.statusReport.images.forEach (image) ->
+      if image.fileId == data.fileId
+        imageUploaded = true
+
+    if !imageUploaded
+      vm.statusReport.images.push data
+
   vm.create = ->
     if isValid vm.statusReport
       params =
@@ -64,10 +74,16 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
       allowMultiple: true
       allowCaptions: true
       onCaptionChange: (data) ->
-        vm.statusReport.images.push
+        vm.addImage
           caption: data.caption
           fileId: data.id
           path: data.path
+      onUploadSuccess: (data) ->
+        vm.addImage
+          caption:  data.caption
+          fileId:   data.id
+          path:     data.path
+
       presign:
         url: domain + '/v3/attachments/uploadurl'
         params:
