@@ -43,7 +43,11 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
         workId: vm.workId
         stepId: vm.stepId
 
-      resource = StatusReportAPIService.post params, vm.statusReport
+      body =
+        params:
+          vm.statusReport
+
+      resource = StatusReportAPIService.post params, body
 
       resource.$promise.then (response) ->
         $state.go 'copilot-status-report-details', {id: vm.workId, reportId: response.id}
