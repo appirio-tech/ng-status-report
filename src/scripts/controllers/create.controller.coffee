@@ -3,11 +3,12 @@
 CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
   vm                   = this
   vm.workId            = $scope.workId
+  vm.stepId            = $scope.stepId
   vm.uploaderUploading = null
   vm.uploaderHasErrors = null
   vm.uploaderHasFiles  = null
-  vm.uploaderFiles = null
-  vm.currentLink = ''
+  vm.uploaderFiles     = null
+  vm.currentLink       = ''
   vm.statusReport      =
     text: null
     links: []
@@ -39,7 +40,8 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
   vm.create = ->
     if isValid vm.statusReport
       params =
-        projectId: vm.workId
+        workId: vm.workId
+        stepId: vm.stepId
 
       resource = StatusReportAPIService.post params, vm.statusReport
 

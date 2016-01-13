@@ -3,6 +3,7 @@
 StatusReportsController = ($scope, API_URL, StatusReportAPIService) ->
   vm        = this
   vm.workId = $scope.workId
+  vm.stepId = $scope.stepId
 
   activate = ->
     vm
