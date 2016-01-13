@@ -6,5 +6,6 @@ directive = ->
   controller  : 'StatusReportsController as vm'
   scope:
     workId: '@workId'
+    stepId: '@stepId'
 
 angular.module('appirio-tech-ng-status-report').directive 'statusReports', directive
