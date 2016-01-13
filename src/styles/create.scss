@@ -69,4 +69,10 @@ create-status-report {
       }
     }
   }
+
+  .is-final {
+    checkbox {
+      margin: 10px;
+    }
+  }
 }

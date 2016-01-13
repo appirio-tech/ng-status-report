@@ -13,6 +13,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
     text: null
     links: []
     images: []
+    isFinal: false
 
   isValid = (report) ->
     report.text != null && !vm.uploaderHasErrors && !vm.uploaderUploading
@@ -44,7 +45,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
         stepId: vm.stepId
 
       body =
-        params:
+        param:
           vm.statusReport
 
       resource = StatusReportAPIService.post params, body

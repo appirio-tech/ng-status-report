@@ -35,5 +35,10 @@ form
         has-files="vm.uploaderHasFiles"
       )
 
+    li.is-final.flex.middle
+      label This is the final deliverable
+
+      checkbox(ng-model="vm.statusReport.isFinal")
+
     li
       button.action(ng-click="vm.create()") send to customer
