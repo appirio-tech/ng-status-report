@@ -44,9 +44,11 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
     vm.statusReport.images.forEach (image) ->
       if image.fileId == data.fileId
         imageUploaded = true
+        image.caption = data.caption
 
     if !imageUploaded
       vm.statusReport.images.push data
+
 
   vm.create = ->
     if isValid vm.statusReport
