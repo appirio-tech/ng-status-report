@@ -4,6 +4,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
   vm                   = this
   vm.workId            = $scope.workId
   vm.stepId            = $scope.stepId
+  vm.permissions       = $scope.permissions
   vm.uploaderUploading = null
   vm.uploaderHasErrors = null
   vm.uploaderHasFiles  = null
@@ -75,6 +76,7 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
       name: "#{assetType}-uploader-#{workId}-#{Date.now()}"
       allowMultiple: true
       allowCaptions: true
+      disabled     : vm.permissions.indexOf('CREATE') == -1
       onCaptionChange: (data) ->
         vm.addImage
           caption: data.caption
