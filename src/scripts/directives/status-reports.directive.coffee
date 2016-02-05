@@ -5,7 +5,8 @@ directive = ->
   templateUrl : 'views/status-reports.directive.html'
   controller  : 'StatusReportsController as vm'
   scope:
-    workId: '@workId'
-    stepId: '@stepId'
+    workId:      '@'
+    stepId:      '@'
+    permissions: '='
 
 angular.module('appirio-tech-ng-status-report').directive 'statusReports', directive
