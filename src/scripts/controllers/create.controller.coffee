@@ -80,15 +80,15 @@ CreateController = ($scope, $state, API_URL, StatusReportAPIService) ->
       onCaptionChange: (data) ->
         vm.addImage
           caption: data.caption
-          fileId: data.id
-          path: data.path
-          fileType: data.type
+          fileId:  data.id
+          path:    data.path
+          type:    data.type
       onUploadSuccess: (data) ->
         vm.addImage
           caption:  data.caption
           fileId:   data.id
           path:     data.path
-          fileType: data.type
+          type:     data.type
 
       presign:
         url: domain + '/v3/attachments/uploadurl'
